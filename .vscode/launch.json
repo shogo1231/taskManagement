@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "configurations": [
     {
-      "command": "npm run dev-buy",
+      "command": "npm run dev",
       "name": "vite server",
       "request": "launch",
       "type": "node-terminal",
