@@ -6,20 +6,21 @@
   "configurations": [
     {
       "command": "npm run dev",
-      "name": "vite server",
+      "name": "app",
       "request": "launch",
+      "cwd": "${workspaceFolder}/app",
       "type": "node-terminal",
       "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "express server",
+      "name": "server",
       "program": "${workspaceFolder}/index.js",
       "restart": true,
       "timeout": 1000,
       "console": "integratedTerminal",
-      "outFiles": ["${workspaceFolder}/*.js", "${workspaceFolder}/routes/*.js", "${workspaceFolder}/models/*.js"],
+      "outFiles": ["${workspaceFolder}/*.js"],
       "internalConsoleOptions": "neverOpen",
       "env": {
 				"NODE_ENV": "debug",
@@ -29,7 +30,7 @@
   "compounds": [
     {
       "name": "buyer",
-      "configurations": ["vite server", "express server"],
+      "configurations": ["app", "server"],
       "stopAll": true
     },
   ]

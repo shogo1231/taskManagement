@@ -1,7 +1,7 @@
 {
-  "name": "vite-project",
+  "name": "taskmanagement-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,6 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "express": "^4.21.0",
     "framer-motion": "^11.3.30",
     "highcharts": "^11.4.8",
     "highcharts-gantt": "^0.1.7",
