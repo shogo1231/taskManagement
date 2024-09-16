@@ -9,5 +9,12 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      '/taskApp': {
+        target: 'http://localhost:3000',  // バックエンドのURL
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/taskApp/, ''),
+      },
+    },
   },
 })

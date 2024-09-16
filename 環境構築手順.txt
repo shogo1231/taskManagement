@@ -11,3 +11,16 @@ https://zenn.dev/kiriyama/articles/630b2547a6ac79
 
 # Highcharts-ganttのインストール
 app/src/vendor直下に配置
+
+
+
+# ローカルデバッグ方法
+〇フロントエンド
+  cd app
+  npm run dev
+  または、VSCodeのローカルデバッガのappを起動
+
+〇バックエンド
+  cd server
+  npm run dev
+  または、VSCodeのローカルデバッガのserverを起動（対応中）

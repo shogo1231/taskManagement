@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsGantt from 'highcharts/modules/gantt';
 import HighchartsReact from 'highcharts-react-official';
@@ -10,6 +10,11 @@ import Accessibility from 'highcharts/modules/accessibility';
 // Emotion
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+
+interface Obj {
+  [prop: string]: any // 『[prop: string]: any』を記述してあげることでどんなプロパティも持てるようになります。
+  [prop: number]: any // 『[prop: string]: any』を記述してあげることでどんなプロパティも持てるようになります。
+}
 
 // CSS
 /*******************************************************************************/
@@ -27,8 +32,10 @@ Exporting(Highcharts);
 ExportData(Highcharts);
 Accessibility(Highcharts);
 
-const GanttChart = () => {
+const HighchartsView = () => {
+  const [chartItem, setChartItem] = useState<Obj>([]);
   const chartComponentRef = useRef(null);
+  const URL = 'http://localhost:3000/taskApp/task/api';
 
   const chartOptions = {
     title: {
@@ -57,46 +64,7 @@ const GanttChart = () => {
     series: [
       {
         name: 'Project 1',
-        data: [
-          {
-            start: Date.UTC(2018, 11, 1),
-            end: Date.UTC(2018, 11, 2),
-            completed: {
-              amount: 0.95
-            },
-            name: 'Prototyping' // ここをPJ名に見立てる。
-          },
-          {
-            start: Date.UTC(2018, 11, 2),
-            end: Date.UTC(2018, 11, 5),
-            completed: {
-              amount: 0.444
-            },
-            name: 'Development'
-          },
-          {
-            start: Date.UTC(2018, 11, 8),
-            end: Date.UTC(2018, 11, 9),
-            completed: {
-              amount: 0.141
-            },
-            name: 'Testing'
-          },
-          {
-            start: Date.UTC(2018, 11, 9),
-            end: Date.UTC(2018, 11, 19),
-            completed: {
-              amount: 0.3,
-              fill: '#fa0'
-            },
-            name: 'Development'
-          },
-          {
-            start: Date.UTC(2018, 11, 10),
-            end: Date.UTC(2018, 11, 23),
-            name: 'Testing'
-          }
-        ]
+        data: chartItem,
       }
     ],
     // チャートのエクスポート設定
@@ -109,6 +77,38 @@ const GanttChart = () => {
       }
     },
   };
+
+  useEffect(() => {
+    console.log('データ取得のuseEffectが実行されました')
+    const fetchData = async () => {
+      try {
+        fetch(URL)
+        .then(res => res.json())
+        .then(result => {
+          // Highcharts-ganttの仕様なのか日付の項目はUTCに変換して表示する必要がある（めんどくさい）
+          // eslint-disable-next-line prefer-const
+          let newResult = [];
+          result.forEach((item) => {
+            const startDate = new Date(item.start);
+            const endDate = new Date(item.end);
+            newResult.push({
+              start: Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()),
+              end: Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()),
+              completed: item.completed,
+              name: item.name,
+            });
+          })
+
+          setChartItem(newResult);
+        })
+      } catch (e) {
+        console.log('データ取得のuseEffectが失敗しました')
+        console.error(e);
+      }
+    };
+
+    fetchData();
+  }, [URL]);
 
   // 忘れてたのでメモ useEffect 関数コンポーネントのレンダリング発生時に動く、第二引数に初期値（空配列）を設定しいるので初回のみ自動起動
   useEffect(() => {
@@ -140,7 +140,14 @@ const GanttChart = () => {
           ref={chartComponentRef}
         />
       </div>
+    </>
+  );
+}
 
+const GanttChart = () => {
+  return (
+    <>
+      <HighchartsView />
       <button id="pdf">Export to PDF</button>
     </>
   );

@@ -3,6 +3,9 @@
 import express from 'express';
 import { sitename } from '../../global/settings.js';
 // import { makeUploadsDirectory } from './global/make-uploads.js';
+import { ensureResponse } from '../models/modules/ensureResponse';
+import { errMessage } from '../models/modules/constTable';
+import task from '../models/task/task';
 
 // const app = express();
 const router = express.Router({
@@ -10,8 +13,15 @@ const router = express.Router({
   strict: true
 });
 
-router.get('/api', (req, res) => {
-  res.status(200).send('GET APIリクエスト')
-});
+// 将来的に、ここのルーティングが増えまくると煩雑になる
+// ルーティングパスは長くなるが、画面単位でファイル分けし、読み込み式にしたい。
+// ドメイン/taskApp/task/画面名/処理名　みたいな感じに持っていきたい。
+router.get('/api', ensureResponse(
+  async (req: any, res: any) => {
+    let result = await task.getTaskData();
+  res.status(200).send(result);
+  },
+  errMessage.getData
+));
 
 export default router;

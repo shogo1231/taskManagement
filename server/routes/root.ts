@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
 import helmet from 'helmet';
@@ -23,9 +24,14 @@ app.use(csrf({ cookie: true }));
 
 app.use(express.json());
 
+// 検証　CORSを受け入れるドメイン設定
+app.use(cors({
+  origin: ['http://localhost:5173']
+}));
+
 // ルーティング設定
 import taskRouter from './task';
-app.use(/^\/.[^/]*\/task/, taskRouter);
+app.use(/^\/.[^/]*/, taskRouter);
 // import indexRouter from './routes/index';
 // app.use(/^\/.[^/]*\/taskmanager/, indexRouter);
 import topRooting from './topRooting';
