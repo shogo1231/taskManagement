@@ -48,3 +48,15 @@ export default tseslint.config({
   },
 })
 ```
+
+
+# ローカルデバッグ方法
+〇フロントエンド
+  cd app<br>
+  npm run dev<br>
+  または、VSCodeのローカルデバッガのappを起動<br>
+
+〇バックエンド
+  cd server<br>
+  npm run dev<br>
+  または、VSCodeのローカルデバッガのserverを起動（対応中）<br>
