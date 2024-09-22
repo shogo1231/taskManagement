@@ -1,5 +1,5 @@
 // import '../Top.css';
-import HighChart from '../HighChart';
+import HighChart from '@/features/projectManagement/components/highChart';
 
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
@@ -12,7 +12,7 @@ const HighChartGanttArea = css`
 
 // JS
 /*******************************************************************************/
-function App() {
+export const App = () => {
   return (
     <>
       <div id='ganttChart' css={HighChartGanttArea}>
@@ -21,5 +21,3 @@ function App() {
     </>
   )
 }
-
-export default App;
