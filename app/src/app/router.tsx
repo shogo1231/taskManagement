@@ -64,6 +64,13 @@ export const createAppRouter = () =>
             return { Component: App };
           },
         },
+        {
+          path: 'withNavigation',
+          lazy: async () => {
+            const { App } = await import('./routes/app/withNavigation');
+            return { Component: App };
+          },
+        },
         // ここでもnotFoundの定義をしておくか、共通的なエラーパスとするか・・・
       ],
     },
