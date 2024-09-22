@@ -1,11 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsGantt from 'highcharts/modules/gantt';
 import HighchartsReact from 'highcharts-react-official';
-// グラフのExport用モジュールとして下記を読み込ませる。
-import Exporting from 'highcharts/modules/exporting';
-import ExportData from 'highcharts/modules/export-data';
-import Accessibility from 'highcharts/modules/accessibility';
 
 // Emotion
 /** @jsxImportSource @emotion/react */
@@ -24,133 +20,256 @@ const Wrapper = css`
   margin-right: auto;
 `;
 
-// JS
-/*******************************************************************************/
-// Highchartsに関するモジュールの初期化
+
+// Ganttモジュールを初期化
 HighchartsGantt(Highcharts);
-Exporting(Highcharts);
-ExportData(Highcharts);
-Accessibility(Highcharts);
 
-const HighchartsView = () => {
-  const [chartItem, setChartItem] = useState<Obj>([]);
-  const chartComponentRef = useRef(null);
-  const URL = 'http://localhost:3000/taskApp/task/api';
-
-  const chartOptions = {
-    title: {
-      text: 'プロジェクト一覧'
-    },
-    yAxis: {
-      uniqueNames: true
-    },
-    accessibility: {
-      point: {
-        descriptionFormat: '{yCategory}. ' +
-          '{#if completed}Task {(multiply completed.amount 100):.1f}% ' +
-          'completed. {/if}' +
-          'Start {x:%Y-%m-%d}, end {x2:%Y-%m-%d}.'
-      }
-    },
-    lang: {
-      accessibility: {
-        axis: {
-          xAxisDescriptionPlural: 'The chart has a two-part X axis ' +
-            'showing time in both week numbers and days.'
-        }
-      }
-    },
-    // 表示データ設定
-    series: [
-      {
-        name: 'Project 1',
-        data: chartItem,
-      }
-    ],
-    // チャートのエクスポート設定
-    exporting: {
-      enabled: true,
-      buttons: {
-        contextButton: {
-          menuItems: ['downloadPDF'] // メニューからPDFを選択
-        }
-      }
-    },
-  };
+const GanttChart = () => {
+  const [options, setOptions] = useState(null);
 
   useEffect(() => {
-    console.log('データ取得のuseEffectが実行されました')
-    const fetchData = async () => {
-      try {
-        fetch(URL)
-        .then(res => res.json())
-        .then(result => {
-          // Highcharts-ganttの仕様なのか日付の項目はUTCに変換して表示する必要がある（めんどくさい）
-          // eslint-disable-next-line prefer-const
-          let newResult = [];
-          result.forEach((item) => {
-            const startDate = new Date(item.start);
-            const endDate = new Date(item.end);
-            newResult.push({
-              start: Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()),
-              end: Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()),
-              completed: item.completed,
-              name: item.name,
-            });
-          })
+    const day = 24 * 36e5;
+    const today = Math.floor(Date.now() / day) * day;
 
-          setChartItem(newResult);
-        })
-      } catch (e) {
-        console.log('データ取得のuseEffectが失敗しました')
-        console.error(e);
+    const chartOptions = {
+      chart: {
+        plotBackgroundColor: 'rgba(128,128,128,0.02)',
+        plotBorderColor: 'rgba(128,128,128,0.1)',
+        plotBorderWidth: 1
+      },
+      plotOptions: {
+        series: {
+          borderRadius: '50%',
+          connectors: {
+            dashStyle: 'ShortDot',
+            lineWidth: 2,
+            radius: 5,
+            startMarker: {
+              enabled: false
+            }
+          },
+          groupPadding: 0,
+          dataLabels: [
+            {
+              enabled: true,
+              align: 'left',
+              format: '{point.name}',
+              padding: 10,
+              style: {
+                fontWeight: 'normal',
+                textOutline: 'none'
+              }
+            },
+            {
+              enabled: true,
+              align: 'right',
+              format: '{#if point.completed}{(multiply point.completed.amount 100):.0f}%{/if}',
+              padding: 10,
+              style: {
+                fontWeight: 'normal',
+                textOutline: 'none',
+                opacity: 0.6
+              }
+            }
+          ]
+        }
+      },
+      series: [{
+        name: 'Offices',
+        data: [{
+            name: 'New offices',
+            id: 'new_offices',
+            owner: 'Peter'
+        }, {
+            name: 'Prepare office building',
+            id: 'prepare_building',
+            parent: 'new_offices',
+            start: today - (2 * day),
+            end: today + (6 * day),
+            completed: {
+                amount: 0.2
+            },
+            owner: 'Linda'
+        }, {
+            name: 'Inspect building',
+            id: 'inspect_building',
+            dependency: 'prepare_building',
+            parent: 'new_offices',
+            start: today + 6 * day,
+            end: today + 8 * day,
+            owner: 'Ivy'
+        }, {
+            name: 'Passed inspection',
+            id: 'passed_inspection',
+            dependency: 'inspect_building',
+            parent: 'new_offices',
+            start: today + 9.5 * day,
+            milestone: true,
+            owner: 'Peter'
+        }, {
+            name: 'Relocate',
+            id: 'relocate',
+            dependency: 'passed_inspection',
+            parent: 'new_offices',
+            owner: 'Josh'
+        }, {
+            name: 'Relocate staff',
+            id: 'relocate_staff',
+            parent: 'relocate',
+            start: today + 10 * day,
+            end: today + 11 * day,
+            owner: 'Mark'
+        }, {
+            name: 'Relocate test facility',
+            dependency: 'relocate_staff',
+            parent: 'relocate',
+            start: today + 11 * day,
+            end: today + 13 * day,
+            owner: 'Anne'
+        }, {
+            name: 'Relocate cantina',
+            dependency: 'relocate_staff',
+            parent: 'relocate',
+            start: today + 11 * day,
+            end: today + 14 * day
+        }]
+      },
+      {
+        name: 'Product',
+        data: [{
+            name: 'New product launch',
+            id: 'new_product',
+            owner: 'Peter'
+        }, {
+            name: 'Development',
+            id: 'development',
+            parent: 'new_product',
+            start: today - day,
+            end: today + (11 * day),
+            completed: {
+                amount: 0.6,
+                fill: '#e80'
+            },
+            owner: 'Susan'
+        }, {
+            name: 'Beta',
+            id: 'beta',
+            dependency: 'development',
+            parent: 'new_product',
+            start: today + 12.5 * day,
+            milestone: true,
+            owner: 'Peter'
+        }, {
+            name: 'Final development',
+            id: 'finalize',
+            dependency: 'beta',
+            parent: 'new_product',
+            start: today + 13 * day,
+            end: today + 17 * day
+        }, {
+            name: 'Launch',
+            dependency: 'finalize',
+            parent: 'new_product',
+            start: today + 17.5 * day,
+            milestone: true,
+            owner: 'Peter'
+      }]
+    }],
+      tooltip: {
+        pointFormat:
+          '<span style="font-weight: bold">{point.name}</span><br>' +
+          '{point.start:%e %b}' +
+          '{#unless point.milestone} → {point.end:%e %b}{/unless}' +
+          '<br>' +
+          '{#if point.completed}' +
+          'Completed: {multiply point.completed.amount 100}%<br>' +
+          '{/if}' +
+          'Owner: {#if point.owner}{point.owner}{else}unassigned{/if}'
+      },
+      title: {
+        text: 'Gantt Project Management'
+      },
+      xAxis: [
+        {
+          currentDateIndicator: {
+            color: '#2caffe',
+            dashStyle: 'ShortDot',
+            width: 2,
+            label: {
+              format: ''
+            }
+          },
+          dateTimeLabelFormats: {
+            day: '%e<br><span style="opacity: 0.5; font-size: 0.7em">%a</span>'
+          },
+          grid: {
+            borderWidth: 0
+          },
+          gridLineWidth: 1,
+          min: today - 3 * day,
+          max: today + 18 * day,
+          custom: {
+            today,
+            weekendPlotBands: true
+          }
+        }
+      ],
+      yAxis: {
+        grid: {
+          borderWidth: 0
+        },
+        gridLineWidth: 0,
+        labels: {
+          symbol: {
+            width: 8,
+            height: 6,
+            x: -4,
+            y: -2
+          }
+        },
+        staticScale: 30
+      },
+      accessibility: {
+        keyboardNavigation: {
+          seriesNavigation: {
+            mode: 'serialize'
+          }
+        },
+        point: {
+          descriptionFormatter: function (point) {
+            const completedValue = point.completed
+              ? point.completed.amount || point.completed
+              : null;
+            const completed = completedValue
+              ? ' Task ' + Math.round(completedValue * 1000) / 10 + '% completed.'
+              : '';
+            const dependency =
+              point.dependency &&
+              point.series.chart.get(point.dependency).name;
+            const dependsOn = dependency
+              ? ' Depends on ' + dependency + '.'
+              : '';
+
+            return Highcharts.format(
+              point.milestone
+                ? '{point.yCategory}. Milestone at {point.x:%Y-%m-%d}. Owner: {point.owner}.{dependsOn}'
+                : '{point.yCategory}.{completed} Start {point.x:%Y-%m-%d}, end {point.x2:%Y-%m-%d}. Owner: {point.owner}.{dependsOn}',
+              { point, completed, dependsOn }
+            );
+          }
+        }
       }
     };
 
-    fetchData();
-  }, [URL]);
-
-  // 忘れてたのでメモ useEffect 関数コンポーネントのレンダリング発生時に動く、第二引数に初期値（空配列）を設定しいるので初回のみ自動起動
-  useEffect(() => {
-    // React.StrictModeの影響で２回DL処理が実行されるのが難点ではある
-    // 何個か記事をあさってみたが、回避策はフラグ管理が現実的らしい
-    // https://qiita.com/asahina820/items/665c55594cfd55e6f14a
-    // これをビルドしてないとき（＝開発モードの時）のみとしたいが上手くできるか・・・
-    console.log('useEffectが実行されました')
-    // Add event listener for the custom button to export the chart
-    const exportButton = document.getElementById('pdf');
-    if (exportButton) {
-      exportButton.addEventListener('click', () => {
-        if (chartComponentRef.current) {
-          chartComponentRef.current.chart.exportChart({
-            type: 'application/pdf'
-          });
-        }
-      });
-    }
+    // オプションを設定
+    setOptions(chartOptions);
   }, []);
 
-  return (
-    <>
-      <div css={Wrapper}>
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={chartOptions}
-          constructorType={'ganttChart'}
-          ref={chartComponentRef}
-        />
-      </div>
-    </>
-  );
-}
-
-const GanttChart = () => {
-  return (
-    <>
-      <HighchartsView />
-      <button id="pdf">Export to PDF</button>
-    </>
-  );
+  return options ? (
+    <div css={Wrapper}>
+      <HighchartsReact highcharts={Highcharts} options={options} constructorType={'ganttChart'} />
+    </div>
+  ) : null;
 };
 
 export default GanttChart;
