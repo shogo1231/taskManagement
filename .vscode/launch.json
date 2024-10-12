@@ -16,16 +16,15 @@
       "type": "node",
       "request": "launch",
       "name": "server",
+      "program": "${workspaceFolder}/server/build/js/server/index.js", // デバッガ起動時に実行する実行ファイル名 メインの JavaScript ファイル
+      "preLaunchTask": "Compile TypeScript",
       "cwd": "${workspaceFolder}/server",
-      "program": "index.ts",
-      "restart": true,
-      "timeout": 1000,
-      "console": "integratedTerminal",
-      "outFiles": ["${workspaceFolder}/*.js"],
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-				"NODE_ENV": "debug",
-			}
+      "outFiles": ["${workspaceFolder}/server/build/js/**/*.js"], // 出力ファイルのパス
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal", // ターミナルを統合ターミナルに設定
+      "sourceMaps": true, // ソースマップを有効にする
+      "restart": true, // ホットリロードみたいなもの（ビルドして使ってるのでおそらく意味ない）
+      "timeout": 1000 // 1000ミリ秒（1秒）のタイムアウトを指定
     }
   ],
   "compounds": [

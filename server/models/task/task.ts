@@ -1,4 +1,4 @@
-import mongo from '../../mongo';
+import * as mongo from '../../mongo.js';
 
 // ローカルDBからサンプルデータを取得
 async function getTaskData () {
@@ -11,6 +11,6 @@ async function getTaskData () {
   return result;
 }
 
-export = {
+export {
   getTaskData,
 }

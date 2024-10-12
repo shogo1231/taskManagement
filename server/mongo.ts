@@ -1,4 +1,4 @@
-import settings from './settings';
+import settings from './settings.js';
 import { MongoClient } from 'mongodb';
 
 let clientPromise = getClientPromise();
@@ -48,7 +48,7 @@ async function getClientWithRetry (cnt = 0) {
   }
 }
 
-export = {
+export {
   getClient,
   getDb,
 }

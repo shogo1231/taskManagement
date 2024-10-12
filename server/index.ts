@@ -1,6 +1,6 @@
 import express from 'express';
-import { sitename } from '../global/settings';
-import appExpress from './routes/root';
+import { sitename } from '../global/settings.js';
+import appExpress from './routes/root.js';
 // import { makeUploadsDirectory } from '../global/make-uploads';
 
 const app = express();
@@ -17,5 +17,6 @@ const port = 3000;
 // makeUploadsDirectory();
 
 app.listen(port, () => {
+  console.log(`Server is starting...`);
   console.log(`http://localhost:${port}/${sitename}`);
 });

@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    // "sourceMap": true,
-    // "outDir": "./build/js/",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "node", // bundlerも使えるが、実行環境がNode.jsなのでnode を使用 https://zenn.dev/t_keshi/scraps/9ddb388bc6975d
+    "sourceMap": true,
+    "outDir": "./build/js/",
+    "esModuleInterop": true, // ES モジュールとの互換性を持たせる
+    // "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
   }

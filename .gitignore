@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 app/src/.env
+
+# TSからJSにビルドしたファイルはgit追跡対象外
+server/build/*

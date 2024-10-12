@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath, URL } from 'url';
 import path from 'path';
 
 /**********************************************************************/
@@ -8,7 +8,7 @@ import path from 'path';
  * @param {string | URL} metaUrl import.meta.url
  * @description ESM形式では__filename,__dirnameは使用できないがこの処理を通せば同じものを使用できる
  */
-function getGlobalName (metaUrl) {
+function getGlobalName (metaUrl: string | URL) {
   const __filename = fileURLToPath(metaUrl);
   const __dirname = path.dirname(__filename);
 

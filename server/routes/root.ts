@@ -6,9 +6,9 @@ import helmet from 'helmet';
 import nocache from 'nocache';
 import path from 'path';
 
-import { getGlobalName } from '../../global/global-name';
+import { getGlobalName } from '../../global/global-name.js';
 
-// const { __dirname } = getGlobalName(import.meta.url);
+const { __dirname } = getGlobalName(import.meta.url);
 
 const app: express.Express = express();
 
@@ -30,11 +30,11 @@ app.use(cors({
 }));
 
 // ルーティング設定
-import taskRouter from './task';
+import taskRouter from './task.js';
 app.use(/^\/.[^/]*/, taskRouter);
 // import indexRouter from './routes/index';
 // app.use(/^\/.[^/]*\/taskmanager/, indexRouter);
-import topRooting from './topRooting';
+import topRooting from './topRooting.js';
 app.use(topRooting);
 
 // 存在しないURLを叩いた場合の404エラー表示用
