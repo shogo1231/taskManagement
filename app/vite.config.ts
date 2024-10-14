@@ -15,10 +15,10 @@ export default defineConfig({
       usePolling: true,
     },
     proxy: {
-      '/taskApp': {
+      '/taskAppAPI': {
         target: 'http://localhost:3000',  // バックエンドのURL
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/taskApp/, ''),
+        rewrite: (path) => path.replace(/^\/taskAppAPI/, ''),
       },
     },
     fs: {

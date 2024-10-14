@@ -10,7 +10,7 @@ import { getGlobalName } from './global-name.js';
 // const viewsDir = path.resolve(__dirname, 'views');
 
 /** サイト名 */
-const sitename = 'taskApp';
+const sitename = 'taskAppAPI';
 // /** ベースとなるURL $divは各企業単位で異なるため、後で書き換える */
 // const baseUrl = '/guide_dev/$div/';
 

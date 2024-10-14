@@ -31,7 +31,7 @@ app.use(cors({
 
 // ルーティング設定
 import taskRouter from './task.js';
-app.use(/^\/.[^/]*/, taskRouter);
+app.use(/^\/taskManagement/, taskRouter);
 // import indexRouter from './routes/index';
 // app.use(/^\/.[^/]*\/taskmanager/, indexRouter);
 import topRooting from './topRooting.js';

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsGantt from 'highcharts/modules/gantt';
 import HighchartsReact from 'highcharts-react-official';
@@ -12,7 +12,9 @@ import Accessibility from 'highcharts/modules/accessibility';
 import { css } from "@emotion/react";
 
 interface Obj {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any // 『[prop: string]: any』を記述してあげることでどんなプロパティも持てるようになります。
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: number]: any // 『[prop: string]: any』を記述してあげることでどんなプロパティも持てるようになります。
 }
 
@@ -33,9 +35,44 @@ ExportData(Highcharts);
 Accessibility(Highcharts);
 
 const HighchartsView = () => {
-  const [chartItem, setChartItem] = useState<Obj>([]);
+  const [chartItem, setChartItem] = useState<Obj>();
+  const [loading, setLoading] = useState(true); // ローディング管理用フラグ。Highcharts用データ取得後のグラフ描画に関する遅延発生を防ぐ。
   const chartComponentRef = useRef(null);
-  const URL = 'http://localhost:3000/taskApp/task/api';
+  const URL = 'http://localhost:3000/taskAppAPI/taskManagement/getTaskManagementData';
+
+  useEffect(() => {
+    console.log('データ取得のuseEffectが実行されました')
+    const fetchData = async () => {
+      try {
+        fetch(URL)
+        .then(res => res.json())
+        .then(result => {
+          // Highcharts-ganttの仕様なのか日付の項目はUTCに変換して表示する必要がある（めんどくさい）
+          // eslint-disable-next-line prefer-const
+          let newResult: Array<object> = [];
+          result.forEach((item: Obj) => {
+            const startDate = new Date(item.start);
+            const endDate = new Date(item.end);
+            newResult.push({
+              start: Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()),
+              end: Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()),
+              completed: item.completed,
+              name: item.name,
+            });
+          })
+
+          setChartItem(newResult);
+
+          setLoading(false);
+        })
+      } catch (e) {
+        console.log('データ取得のuseEffectが失敗しました')
+        console.error(e);
+      }
+    };
+
+    fetchData();
+  }, [URL]);
 
   const chartOptions = {
     title: {
@@ -61,12 +98,12 @@ const HighchartsView = () => {
       }
     },
     // 表示データ設定
-    series: [
+    series: !loading ? [
       {
-        name: 'Task 1',
+        name: 'task1',
         data: chartItem,
       }
-    ],
+    ]: [],
     // チャートのエクスポート設定
     exporting: {
       enabled: true,
@@ -77,38 +114,6 @@ const HighchartsView = () => {
       }
     },
   };
-
-  useEffect(() => {
-    console.log('データ取得のuseEffectが実行されました')
-    const fetchData = async () => {
-      try {
-        fetch(URL)
-        .then(res => res.json())
-        .then(result => {
-          // Highcharts-ganttの仕様なのか日付の項目はUTCに変換して表示する必要がある（めんどくさい）
-          // eslint-disable-next-line prefer-const
-          let newResult = [];
-          result.forEach((item) => {
-            const startDate = new Date(item.start);
-            const endDate = new Date(item.end);
-            newResult.push({
-              start: Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()),
-              end: Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()),
-              completed: item.completed,
-              name: item.name,
-            });
-          })
-
-          setChartItem(newResult);
-        })
-      } catch (e) {
-        console.log('データ取得のuseEffectが失敗しました')
-        console.error(e);
-      }
-    };
-
-    fetchData();
-  }, [URL]);
 
   // 忘れてたのでメモ useEffect 関数コンポーネントのレンダリング発生時に動く、第二引数に初期値（空配列）を設定しいるので初回のみ自動起動
   useEffect(() => {
@@ -132,6 +137,9 @@ const HighchartsView = () => {
 
   return (
     <>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
       <div css={Wrapper}>
         <HighchartsReact
           highcharts={Highcharts}
@@ -140,6 +148,7 @@ const HighchartsView = () => {
           ref={chartComponentRef}
         />
       </div>
+      )}
     </>
   );
 }
@@ -148,7 +157,6 @@ const GanttChart = () => {
   return (
     <>
       <HighchartsView />
-      <button id="pdf">Export to PDF</button>
     </>
   );
 };

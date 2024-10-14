@@ -43,7 +43,7 @@ import { AppRoot } from './routes/app/root';
 export const createAppRouter = () =>
   createBrowserRouter([
     {
-      path: '/task',
+      path: '/taskApp',
       element: (
         // <ProtectedRoute>
           <AppRoot />
