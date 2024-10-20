@@ -4,7 +4,7 @@ import * as mongo from '../../mongo.js';
 async function getTaskData () {
   const db = await mongo.getDb();
 
-  const result = await db.collection('project')
+  const result = await db.collection('task')
   .find({})
   .toArray();
 
